@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { dirLabel } from "../lib/langs";
 import { useStore } from "../state/store";
 
@@ -5,9 +6,9 @@ function when(ms: number): string {
   const d = new Date(ms);
   const now = Date.now();
   const diff = (now - ms) / 1000;
-  if (diff < 60) return "agora";
-  if (diff < 3600) return `${Math.floor(diff / 60)} min`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} h`;
+  if (diff < 60) return t("time.now");
+  if (diff < 3600) return t("time.min", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t("time.hour", { n: Math.floor(diff / 3600) });
   return d.toLocaleDateString();
 }
 
@@ -20,19 +21,19 @@ export function HistoryPanel() {
   return (
     <aside className="history">
       <div className="history-head">
-        <h2>Histórico</h2>
+        <h2>{t("history.title")}</h2>
         {history.length > 0 && (
           <button className="link" onClick={clearHistory}>
-            limpar tudo
+            {t("history.clearAll")}
           </button>
         )}
       </div>
       {history.length === 0 ? (
-        <p className="empty">Nada traduzido ainda.</p>
+        <p className="empty">{t("history.empty")}</p>
       ) : (
         <ul>
           {history.map((e) => (
-            <li key={e.id} onClick={() => useEntry(e)} title="Reabrir esta tradução">
+            <li key={e.id} onClick={() => useEntry(e)} title={t("history.reopenTitle")}>
               <div className="h-meta">
                 <span className="h-dir">{dirLabel(e.direction)}</span>
                 <span className="h-when">{when(e.createdMs)}</span>
@@ -41,7 +42,7 @@ export function HistoryPanel() {
               <div className="h-res">{e.result}</div>
               <button
                 className="h-del"
-                title="Excluir"
+                title={t("history.deleteTitle")}
                 onClick={(ev) => {
                   ev.stopPropagation();
                   removeEntry(e.id);

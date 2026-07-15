@@ -12,6 +12,7 @@ import {
   onOpenFile,
   readTextFile,
 } from "./lib/backend";
+import { t } from "./lib/i18n";
 import { useStore } from "./state/store";
 import { useUi } from "./state/ui";
 
@@ -36,15 +37,15 @@ export default function App() {
       onDownloadDone((d) => {
         setProgress(d.leg, null);
         loadModels();
-        if (d.ok) pushToast("ok", `Modelo ${d.leg} instalado`);
+        if (d.ok) pushToast("ok", t("toast.modelInstalled", { leg: d.leg }));
         else if (d.error && d.error !== "cancelado")
-          pushToast("error", `Falha ao baixar ${d.leg}: ${d.error}`);
+          pushToast("error", t("toast.downloadFailed", { leg: d.leg, error: d.error }));
       }),
       onOpenFile(async (path) => {
         try {
           setSource(await readTextFile(path));
         } catch {
-          pushToast("error", "Não consegui abrir o arquivo.");
+          pushToast("error", t("toast.openFailed"));
         }
       }),
     ];

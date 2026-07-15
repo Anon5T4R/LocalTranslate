@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { inTauri, readTextFile } from "../lib/backend";
 import { detectLang } from "../lib/detect";
+import { t } from "../lib/i18n";
 import { LANGS, dirId, dirLabel, type Lang } from "../lib/langs";
 import { useStore } from "../state/store";
 import { useUi } from "../state/ui";
@@ -65,9 +66,9 @@ export function TranslatePanel() {
     if (!result) return;
     try {
       await navigator.clipboard.writeText(result);
-      pushToast("ok", "Tradução copiada");
+      pushToast("ok", t("toast.copied"));
     } catch {
-      pushToast("error", "Não consegui copiar");
+      pushToast("error", t("toast.copyFailed"));
     }
   };
 
@@ -81,7 +82,7 @@ export function TranslatePanel() {
       try {
         setSource(await readTextFile(path));
       } catch {
-        pushToast("error", "Falha ao ler o arquivo");
+        pushToast("error", t("toast.readFailed"));
       }
     }
   };
@@ -92,30 +93,31 @@ export function TranslatePanel() {
     <main className="translate">
       <div className="lang-bar">
         <LangSelect value={from} onChange={setFrom} exclude={to} />
-        <button className="swap" onClick={swap} title="Inverter idiomas">
+        <button className="swap" onClick={swap} title={t("panel.swapTitle")}>
           ⇄
         </button>
         <LangSelect value={to} onChange={setTo} exclude={from} />
         <div className="spacer" />
-        <button className="ghost" onClick={openFile} title="Abrir arquivo .txt/.md">
-          📄 Abrir arquivo
+        <button className="ghost" onClick={openFile} title={t("panel.openFileTitle")}>
+          📄 {t("panel.openFile")}
         </button>
       </div>
 
       {suggestSwap && (
         <div className="hint">
-          Parece {LANGS.find((l) => l.code === detected)?.name}. {" "}
+          {t("panel.looksLike", { lang: LANGS.find((l) => l.code === detected)?.name ?? "" })}{" "}
           <button className="link" onClick={swap}>
-            Inverter para {dirLabel(dirId(to, from))}
+            {t("panel.swapTo", { dir: dirLabel(dirId(to, from)) })}
           </button>
         </div>
       )}
 
       {modelMissing && (
         <div className="banner warn">
-          O modelo para <strong>{dirLabel(modelMissing)}</strong> ainda não foi baixado.{" "}
+          {t("panel.modelMissingPre")} <strong>{dirLabel(modelMissing)}</strong>{" "}
+          {t("panel.modelMissingPost")}{" "}
           <button className="link" onClick={() => setModelsOpen(true)}>
-            Baixar agora
+            {t("panel.downloadNow")}
           </button>
         </div>
       )}
@@ -129,7 +131,7 @@ export function TranslatePanel() {
               <span className="count">{source.length}</span>
               {source && (
                 <button className="link" onClick={() => setSource("")}>
-                  limpar
+                  {t("panel.clear")}
                 </button>
               )}
             </div>
@@ -139,7 +141,7 @@ export function TranslatePanel() {
             value={source}
             onChange={(e) => setSource(e.target.value)}
             onKeyDown={onKey}
-            placeholder="Digite ou cole o texto…  (Ctrl+Enter traduz)"
+            placeholder={t("panel.sourcePlaceholder")}
             autoFocus
           />
         </div>
@@ -150,7 +152,7 @@ export function TranslatePanel() {
             <div className="box-actions">
               {result && (
                 <button className="link" onClick={copyResult}>
-                  copiar
+                  {t("panel.copy")}
                 </button>
               )}
             </div>
@@ -158,7 +160,7 @@ export function TranslatePanel() {
           <textarea
             value={translating ? "" : result}
             readOnly
-            placeholder={translating ? "Traduzindo…" : "Tradução"}
+            placeholder={translating ? t("panel.translating") : t("panel.resultPlaceholder")}
             className={translating ? "loading" : ""}
           />
         </div>
@@ -166,7 +168,7 @@ export function TranslatePanel() {
 
       <div className="run">
         <button className="primary" onClick={translate} disabled={translating || !source.trim()}>
-          {translating ? "Traduzindo…" : "Traduzir"}
+          {translating ? t("panel.translating") : t("panel.translate")}
         </button>
       </div>
     </main>

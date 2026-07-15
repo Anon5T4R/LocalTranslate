@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { useStore } from "../state/store";
 import { useUi } from "../state/ui";
 
@@ -20,14 +21,14 @@ export function TopBar() {
         <button
           className={historyOpen ? "active" : ""}
           onClick={toggleHistory}
-          title="Histórico de traduções"
+          title={t("topbar.historyTitle")}
         >
-          🕘 Histórico
+          🕘 {t("topbar.history")}
         </button>
-        <button onClick={() => setModelsOpen(true)} title="Gerenciar modelos de idioma">
-          {anyInstalled ? "📦 Modelos" : "📥 Modelos"}
+        <button onClick={() => setModelsOpen(true)} title={t("topbar.modelsTitle")}>
+          {anyInstalled ? "📦" : "📥"} {t("topbar.models")}
         </button>
-        <button onClick={() => setSettingsOpen(true)} title="Configurações">
+        <button onClick={() => setSettingsOpen(true)} title={t("topbar.settingsTitle")}>
           ⚙️
         </button>
       </div>

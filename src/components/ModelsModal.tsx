@@ -1,4 +1,5 @@
 import { cancelDownload, downloadModel, fmtBytes, removeModel } from "../lib/backend";
+import { t } from "../lib/i18n";
 import { dirLabel } from "../lib/langs";
 import type { LegStatus } from "../lib/types";
 import { useStore } from "../state/store";
@@ -28,7 +29,7 @@ export function ModelsModal() {
     try {
       await removeModel(leg);
       await loadModels();
-      pushToast("info", `Modelo ${leg} removido`);
+      pushToast("info", t("toast.modelRemoved", { leg }));
     } catch (e) {
       pushToast("error", String(e));
     }
@@ -38,15 +39,12 @@ export function ModelsModal() {
     <div className="overlay" onClick={() => setModelsOpen(false)}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <h2>Modelos de idioma</h2>
+          <h2>{t("models.title")}</h2>
           <button className="close" onClick={() => setModelsOpen(false)}>
             ✕
           </button>
         </div>
-        <p className="modal-sub">
-          Baixe só os pares que usar. Português ↔ Espanhol reaproveita os modelos
-          via inglês (não tem download próprio).
-        </p>
+        <p className="modal-sub">{t("models.sub")}</p>
         <ul className="model-list">
           {legs.map((l) => {
             const p = progress[l.leg];
@@ -57,7 +55,7 @@ export function ModelsModal() {
                 <div className="m-info">
                   <span className="m-name">{dirLabel(l.leg)}</span>
                   <span className="m-size">
-                    {l.installed ? "instalado" : fmtBytes(l.bytes)}
+                    {l.installed ? t("models.installed") : fmtBytes(l.bytes)}
                   </span>
                 </div>
                 {downloading ? (
@@ -69,16 +67,16 @@ export function ModelsModal() {
                       {p ? `${fmtBytes(p.received)} / ${fmtBytes(p.total)}` : "…"}
                     </span>
                     <button className="ghost" onClick={() => stopDownload(l.leg)}>
-                      cancelar
+                      {t("models.cancel")}
                     </button>
                   </div>
                 ) : l.installed ? (
                   <button className="ghost danger" onClick={() => doRemove(l.leg)}>
-                    remover
+                    {t("models.remove")}
                   </button>
                 ) : (
                   <button className="primary sm" onClick={() => startDownload(l.leg)}>
-                    baixar
+                    {t("models.download")}
                   </button>
                 )}
               </li>
@@ -86,8 +84,8 @@ export function ModelsModal() {
           })}
         </ul>
         <p className="modal-foot">
-          Os modelos ficam em <code>app_data/translate/models</code>. Ficam na RAM só
-          enquanto em uso e são descarregados depois de alguns minutos parados.
+          {t("models.foot1")} <code>app_data/translate/models</code>
+          {t("models.foot2")}
         </p>
       </div>
     </div>
