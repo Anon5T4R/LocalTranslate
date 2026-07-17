@@ -10,7 +10,7 @@
   --text: #16202e;
   /* Escurecido 1.4 L* (matiz preservado): o painel saiu do branco puro e o
      secundário caiu pra 4.37:1 — isto o traz de volta pra 4.62:1 (AA). */
-  --muted: #677284;
+  --muted: #626c7d;
   --border: #dadfe7;
   --accent: #4f46e5;
   --accent-2: #06b6d4;
@@ -48,7 +48,7 @@
   --panel: #f8faf5;
   --panel-2: #e4eade;
   --text: #2e3a2e;
-  --muted: #697669;
+  --muted: #647064;
   --border: #dbe3d4;
   --accent: #7a9e7e;
   --accent-2: #e8b4c8;
@@ -84,7 +84,7 @@
   --panel: #f7faf6;
   --panel-2: #dfe8dd;
   --text: #24302a;
-  --muted: #67776c;
+  --muted: #617066;
   --border: #d5e0d3;
   --accent: #4f7d5e;
   --accent-2: #6fa07e;
@@ -102,7 +102,7 @@
   --panel: #fdf6f9;
   --panel-2: #f2dde6;
   --text: #3a2a30;
-  --muted: #806d77;
+  --muted: #796771;
   --border: #ecd3de;
   --accent: #e8799f;
   --accent-2: #f4a9c4;
