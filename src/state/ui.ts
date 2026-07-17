@@ -1,6 +1,22 @@
 import { create } from "zustand";
 
-export type Theme = "light" | "dark" | "system";
+export type Theme =
+  | "light"
+  | "dark"
+  | "system"
+  | "nature"
+  | "darkblue"
+  | "calmgreen"
+  | "pastelpink"
+  | "punkprincess";
+
+const NAMED_THEMES: Theme[] = [
+  "nature",
+  "darkblue",
+  "calmgreen",
+  "pastelpink",
+  "punkprincess",
+];
 
 export interface Toast {
   id: number;
@@ -27,7 +43,9 @@ const THEME_KEY = "localtranslate.theme";
 
 function loadTheme(): Theme {
   const v = localStorage.getItem(THEME_KEY);
-  return v === "light" || v === "dark" || v === "system" ? v : "system";
+  return v === "light" || v === "dark" || v === "system" || NAMED_THEMES.includes(v as Theme)
+    ? (v as Theme)
+    : "system";
 }
 
 /** Aplica o tema no <html data-theme> (resolvendo "system" pela mídia). */

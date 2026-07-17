@@ -35,6 +35,96 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
+:root[data-theme="nature"] {
+  --bg: #f5f7f2;
+  --panel: #ffffff;
+  --panel-2: #eef2ea;
+  --text: #2e3a2e;
+  --muted: #6f7d6f;
+  --border: #e2e8dd;
+  --accent: #7a9e7e;
+  --accent-2: #e8b4c8;
+  --accent-ink: #1e2a1e;
+  --danger: #c0492f;
+  --warn-bg: #f7efe0;
+  --warn-border: #c98a2e;
+  --err-bg: #f7e6e1;
+  --err-border: #c0492f;
+  --shadow: 0 10px 30px rgba(60, 70, 60, 0.14);
+}
+
+:root[data-theme="darkblue"] {
+  --bg: #0d1520;
+  --panel: #131f30;
+  --panel-2: #1a2942;
+  --text: #e2e8f0;
+  --muted: #8595ad;
+  --border: #223049;
+  --accent: #3b82f6;
+  --accent-2: #60a5fa;
+  --accent-ink: #ffffff;
+  --danger: #f87171;
+  --warn-bg: #2a2210;
+  --warn-border: #d9a441;
+  --err-bg: #2a1414;
+  --err-border: #f87171;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+
+:root[data-theme="calmgreen"] {
+  --bg: #f2f5f1;
+  --panel: #ffffff;
+  --panel-2: #e9efe7;
+  --text: #24302a;
+  --muted: #6a7a6f;
+  --border: #dde6dc;
+  --accent: #4f7d5e;
+  --accent-2: #6fa07e;
+  --accent-ink: #ffffff;
+  --danger: #c0492f;
+  --warn-bg: #f6efe0;
+  --warn-border: #c98a2e;
+  --err-bg: #f6e5e0;
+  --err-border: #c0492f;
+  --shadow: 0 10px 30px rgba(60, 70, 60, 0.14);
+}
+
+:root[data-theme="pastelpink"] {
+  --bg: #fdf4f7;
+  --panel: #ffffff;
+  --panel-2: #f9eaf0;
+  --text: #3a2a30;
+  --muted: #8a7580;
+  --border: #f2dfe7;
+  --accent: #e8799f;
+  --accent-2: #f4a9c4;
+  --accent-ink: #3a2028;
+  --danger: #d84a6b;
+  --warn-bg: #f9efdf;
+  --warn-border: #d99a3e;
+  --err-bg: #f9e2e7;
+  --err-border: #d84a6b;
+  --shadow: 0 10px 30px rgba(60, 70, 60, 0.14);
+}
+
+:root[data-theme="punkprincess"] {
+  --bg: #120a1a;
+  --panel: #1a0f26;
+  --panel-2: #241533;
+  --text: #f0e6ff;
+  --muted: #9a86b5;
+  --border: #2c1c3d;
+  --accent: #ff2d95;
+  --accent-2: #2de2ff;
+  --accent-ink: #12061a;
+  --danger: #ff5470;
+  --warn-bg: #2a1e0e;
+  --warn-border: #ffb454;
+  --err-bg: #2a0f16;
+  --err-border: #ff5470;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -444,6 +534,7 @@ code {
 }
 .seg {
   display: inline-flex;
+  flex-wrap: wrap;
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;

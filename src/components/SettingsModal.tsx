@@ -1,10 +1,26 @@
 import { LOCALE_LABELS, type Locale, setLocale, t, useLocale } from "../lib/i18n";
 import { type Theme, useUi } from "../state/ui";
 
-const THEMES: { value: Theme; labelKey: "settings.themeSystem" | "settings.themeLight" | "settings.themeDark" }[] = [
+const THEMES: {
+  value: Theme;
+  labelKey:
+    | "settings.themeSystem"
+    | "settings.themeLight"
+    | "settings.themeDark"
+    | "settings.themeNature"
+    | "settings.themeDarkblue"
+    | "settings.themeCalmgreen"
+    | "settings.themePastelpink"
+    | "settings.themePunkprincess";
+}[] = [
   { value: "system", labelKey: "settings.themeSystem" },
   { value: "light", labelKey: "settings.themeLight" },
   { value: "dark", labelKey: "settings.themeDark" },
+  { value: "nature", labelKey: "settings.themeNature" },
+  { value: "darkblue", labelKey: "settings.themeDarkblue" },
+  { value: "calmgreen", labelKey: "settings.themeCalmgreen" },
+  { value: "pastelpink", labelKey: "settings.themePastelpink" },
+  { value: "punkprincess", labelKey: "settings.themePunkprincess" },
 ];
 
 const LOCALES: Locale[] = ["pt", "en", "es"];
