@@ -68,6 +68,16 @@ export function onDownloadDone(cb: (d: DownloadDone) => void): Promise<UnlistenF
 export function onOpenFile(cb: (path: string) => void): Promise<UnlistenFn> {
   return listen<string>("open-file", (e) => cb(e.payload));
 }
+/**
+ * O atalho global não registrou no BOOT (outro app tem a combinação).
+ *
+ * Porta separada da rejeição do `quickConfigSet`: aquela só existe no caminho
+ * de SALVAR, então até a v0.4.0 o conflito no boot era invisível — a tecla não
+ * fazia nada e nada na tela dizia por quê. (Desenho do LocalTerminal 0.5.0.)
+ */
+export function onQuickShortcutFailed(cb: (accel: string) => void): Promise<UnlistenFn> {
+  return listen<string>("quick-shortcut-failed", (e) => cb(e.payload));
+}
 export function onDocProgress(cb: (p: DocProgress) => void): Promise<UnlistenFn> {
   return listen<DocProgress>("doc-progress", (e) => cb(e.payload));
 }

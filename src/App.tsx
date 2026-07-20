@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TopBar } from "./components/TopBar";
 import { TranslatePanel } from "./components/TranslatePanel";
 import { HistoryPanel } from "./components/HistoryPanel";
@@ -11,6 +11,7 @@ import {
   onDownloadDone,
   onDownloadProgress,
   onOpenFile,
+  onQuickShortcutFailed,
   readTextFile,
 } from "./lib/backend";
 import { t } from "./lib/i18n";
@@ -23,6 +24,11 @@ export default function App() {
   const settingsOpen = useUi((s) => s.settingsOpen);
   const fileOpen = useUi((s) => s.fileOpen);
   const pushToast = useUi((s) => s.pushToast);
+  const setSettingsOpen = useUi((s) => s.setSettingsOpen);
+  // Atalho global que não registrou no boot. Vive aqui (e não num toast)
+  // porque é acionável e não pode sumir sozinho: o usuário precisa trocar a
+  // combinação, e um toast de 4s some antes de ele terminar de ler.
+  const [shortcutFailed, setShortcutFailed] = useState<string | null>(null);
 
   const loadHistory = useStore((s) => s.loadHistory);
   const loadModels = useStore((s) => s.loadModels);
@@ -50,6 +56,7 @@ export default function App() {
           pushToast("error", t("toast.openFailed"));
         }
       }),
+      onQuickShortcutFailed((accel) => setShortcutFailed(accel)),
     ];
     return () => {
       unlisteners.forEach((p) => p.then((u) => u()));
@@ -58,6 +65,26 @@ export default function App() {
 
   return (
     <div className="app">
+      {shortcutFailed && (
+        <div className="banner err">
+          <span>{t("settings.bootBusy", { accel: shortcutFailed })}</span>
+          <button
+            onClick={() => {
+              setShortcutFailed(null);
+              setSettingsOpen(true);
+            }}
+          >
+            {t("settings.bootBusyFix")}
+          </button>
+          <button
+            onClick={() => setShortcutFailed(null)}
+            title={t("settings.bootBusyDismiss")}
+            aria-label={t("settings.bootBusyDismiss")}
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <TopBar />
       <div className="body">
         <TranslatePanel />

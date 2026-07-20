@@ -302,6 +302,19 @@ button.close {
   border-color: var(--accent);
 }
 
+/* Aviso de topo do app (atalho global que não registrou no boot). NÃO some
+   sozinho: é acionável — sai quando o usuário resolve ou dispensa, não por
+   tempo, ao contrário dos toasts. */
+.app > .banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 10px 0;
+}
+.app > .banner span {
+  flex: 1;
+}
+
 /* ---------- caixas de tradução ---------- */
 .boxes {
   flex: 1;

@@ -301,12 +301,13 @@ pub fn run() {
 
             // Atalho global a partir do que estiver salvo. Falha aqui é comum
             // (combinação já tomada por outro app) e NÃO pode derrubar o boot —
-            // vira aviso e a UI de configurações mostra o erro ao tentar de novo.
+            // vira EVENTO pra janela principal, que mostra um banner com botão
+            // pra trocar a combinação. (Até a v0.4.0 era só `eprintln!`: o
+            // usuário apertava a tecla, nada acontecia, e nada na tela dizia
+            // por quê. Desenho portado do LocalTerminal 0.5.0.)
             if let Ok(data) = app_data(app.handle()) {
                 let cfg = quick::load(&data);
-                if let Err(e) = quick::apply_shortcut(app.handle(), &cfg) {
-                    eprintln!("[localtranslate] atalho global não registrado: {e}");
-                }
+                quick::apply_at_boot(app.handle(), &cfg);
             }
 
             // Fechar a principal só manda pra bandeja se o usuário pediu — a
@@ -373,6 +374,14 @@ pub fn run() {
             history::history_delete,
             history::history_clear,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while building tauri application");
+        .build(tauri::generate_context!())
+        // Falha aqui é fatal por definição: sem o runtime Tauri não há app.
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            if let tauri::RunEvent::Exit = event {
+                // Atalho global é recurso do SISTEMA: sair sem devolver deixaria
+                // a combinação presa até o próximo logon.
+                quick::release_on_exit(app);
+            }
+        });
 }

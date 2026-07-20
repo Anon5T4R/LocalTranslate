@@ -129,6 +129,10 @@ const pt = {
   "settings.quickBusy": "O sistema recusou \"{accel}\" — provavelmente já é atalho de outro app.",
   "settings.quickKeepTray": "Fechar a janela mantém o app na bandeja (atalho segue valendo)",
   "settings.quickSaved": "Atalho registrado.",
+  "settings.bootBusy":
+    "O atalho global \"{accel}\" não foi registrado — outro app provavelmente já o usa. A tradução rápida não vai abrir até você escolher outra combinação.",
+  "settings.bootBusyFix": "Trocar o atalho",
+  "settings.bootBusyDismiss": "Dispensar aviso",
 } as const;
 
 export type MessageKey = keyof typeof pt;
@@ -232,6 +236,10 @@ const en: Record<MessageKey, string> = {
   "settings.quickBusy": "The system refused \"{accel}\" — another app probably owns it.",
   "settings.quickKeepTray": "Closing the window keeps the app in the tray (shortcut stays live)",
   "settings.quickSaved": "Shortcut registered.",
+  "settings.bootBusy":
+    "The global shortcut \"{accel}\" was not registered — another app probably owns it. Quick translate will not open until you pick another combination.",
+  "settings.bootBusyFix": "Change the shortcut",
+  "settings.bootBusyDismiss": "Dismiss warning",
 };
 
 const es: Record<MessageKey, string> = {
@@ -333,6 +341,10 @@ const es: Record<MessageKey, string> = {
   "settings.quickBusy": "El sistema rechazó \"{accel}\" — probablemente ya es atajo de otra app.",
   "settings.quickKeepTray": "Cerrar la ventana mantiene la app en la bandeja (el atajo sigue activo)",
   "settings.quickSaved": "Atajo registrado.",
+  "settings.bootBusy":
+    "El atajo global \"{accel}\" no se registró — probablemente ya lo usa otra app. La traducción rápida no se abrirá hasta que elijas otra combinación.",
+  "settings.bootBusyFix": "Cambiar el atajo",
+  "settings.bootBusyDismiss": "Descartar aviso",
 };
 
 const DICTS: Record<Locale, Record<MessageKey, string>> = { pt, en, es };
