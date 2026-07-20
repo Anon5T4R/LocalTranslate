@@ -5,9 +5,11 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import type {
   DirectionStatus,
+  DocProgress,
   DownloadDone,
   DownloadProgress,
   HistoryEntry,
+  QuickConfig,
 } from "./types";
 
 export function inTauri(): boolean {
@@ -35,6 +37,20 @@ export const removeModel = (leg: string) => cmd<void>("remove_model", { leg });
 export const translateText = (direction: string, text: string) =>
   cmd<string>("translate_text", { direction, text });
 
+// --- tradução de documento (.txt/.md) ---
+export const translateDocument = (direction: string, text: string, markdown: boolean) =>
+  cmd<string>("translate_document", { direction, text, markdown });
+export const cancelDocument = () => cmd<void>("cancel_document");
+export const documentUnits = (text: string, markdown: boolean) =>
+  cmd<number>("document_units", { text, markdown });
+
+// --- janela rápida ---
+export const quickConfig = () => cmd<QuickConfig>("quick_config");
+export const quickConfigSet = (cfg: QuickConfig) => cmd<void>("quick_config_set", { cfg });
+export const quickHide = () => cmd<void>("quick_hide");
+export const clipboardRead = () => cmd<string>("clipboard_read");
+export const clipboardWrite = (text: string) => cmd<void>("clipboard_write", { text });
+
 // --- histórico ---
 export const historyList = () => cmd<HistoryEntry[]>("history_list");
 export const historyAdd = (direction: string, source: string, result: string) =>
@@ -51,6 +67,15 @@ export function onDownloadDone(cb: (d: DownloadDone) => void): Promise<UnlistenF
 }
 export function onOpenFile(cb: (path: string) => void): Promise<UnlistenFn> {
   return listen<string>("open-file", (e) => cb(e.payload));
+}
+export function onDocProgress(cb: (p: DocProgress) => void): Promise<UnlistenFn> {
+  return listen<DocProgress>("doc-progress", (e) => cb(e.payload));
+}
+export function onQuickOpen(cb: (clipboard: string) => void): Promise<UnlistenFn> {
+  return listen<string>("quick-open", (e) => cb(e.payload));
+}
+export function onQuickBlur(cb: () => void): Promise<UnlistenFn> {
+  return listen("quick-blur", () => cb());
 }
 
 /** Formata bytes em unidade legível (MB/GB). */

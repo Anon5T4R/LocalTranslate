@@ -1,18 +1,33 @@
 mod history;
+mod md;
+mod quick;
 mod translate;
 
 use std::path::{Path, PathBuf};
-use std::time::Duration;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 use serde::Serialize;
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::menu::{Menu, MenuItem};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::{AppHandle, Emitter, Manager, State, WindowEvent};
 
 use history::Db;
 use translate::{DirectionStatus, Translator};
 
 /// Pasta de dados do app (onde ficam os modelos e o histórico).
-fn app_data(app: &AppHandle) -> Result<PathBuf, String> {
+pub(crate) fn app_data(app: &AppHandle) -> Result<PathBuf, String> {
     app.path().app_data_dir().map_err(|e| e.to_string())
+}
+
+/// Traz a janela principal de volta (bandeja, 2º launch).
+fn show_main(app: &AppHandle) {
+    if let Some(w) = app.get_webview_window("main") {
+        let _ = w.show();
+        let _ = w.unminimize();
+        let _ = w.set_focus();
+    }
 }
 
 /// Caminho passado no launch (abrir um `.txt`/`.md` pelo "Abrir com"), se houver.
@@ -130,6 +145,93 @@ fn translate_text(
     translate::translate(&data, &tr, &direction, &text)
 }
 
+// --- tradução de documento (.txt / .md) ---
+
+/// Cancelamento da tradução de documento em andamento (uma por vez).
+#[derive(Default)]
+struct DocJob(std::sync::Mutex<Option<Arc<AtomicBool>>>);
+
+#[derive(Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct DocProgress {
+    done: usize,
+    total: usize,
+}
+
+/// Quantos trechos vão ao modelo por lote. Lotes pequenos = progresso mais
+/// vivo e cancelamento mais rápido; o modelo já está na RAM, então o custo de
+/// dividir é zero (o `engine_for` acha o motor no cache).
+const DOC_BATCH: usize = 8;
+
+/// Traduz um documento inteiro preservando a estrutura (ver `md.rs`).
+///
+/// Roda em `async` (thread pool do Tauri), então a janela **não trava** —
+/// o progresso chega pelo evento `doc-progress` e dá pra cancelar.
+#[tauri::command(async)]
+fn translate_document(
+    app: AppHandle,
+    tr: State<'_, Translator>,
+    job: State<'_, DocJob>,
+    direction: String,
+    text: String,
+    markdown: bool,
+) -> Result<String, String> {
+    let data = app_data(&app)?;
+    for leg in translate::legs(&direction).ok_or("direção inválida")? {
+        if !translate::leg_installed(&data, leg) {
+            return Err(format!("MODEL_MISSING:{leg}"));
+        }
+    }
+
+    let total = md::prose_count(&text, markdown);
+    let flag = Arc::new(AtomicBool::new(false));
+    *job.0.lock().unwrap() = Some(flag.clone());
+    let _ = app.emit("doc-progress", DocProgress { done: 0, total });
+
+    let mut done = 0usize;
+    let mut last = Instant::now();
+    let res = md::translate_doc(&text, markdown, |batch| {
+        let mut out = Vec::with_capacity(batch.len());
+        for group in batch.chunks(DOC_BATCH) {
+            if flag.load(Ordering::Relaxed) {
+                return Err("cancelado".into());
+            }
+            out.extend(translate::translate_texts(
+                &data,
+                &tr,
+                &direction,
+                group.to_vec(),
+            )?);
+            done += group.len();
+            if last.elapsed() >= Duration::from_millis(250) {
+                last = Instant::now();
+                let _ = app.emit(
+                    "doc-progress",
+                    DocProgress { done: done.min(total), total },
+                );
+            }
+        }
+        Ok(out)
+    });
+
+    *job.0.lock().unwrap() = None;
+    let _ = app.emit("doc-progress", DocProgress { done: total, total });
+    res
+}
+
+#[tauri::command(async)]
+fn cancel_document(job: State<'_, DocJob>) {
+    if let Some(f) = job.0.lock().unwrap().as_ref() {
+        f.store(true, Ordering::Relaxed);
+    }
+}
+
+/// Quantos trechos o documento tem (estimativa de trabalho antes de começar).
+#[tauri::command(async)]
+fn document_units(text: String, markdown: bool) -> usize {
+    md::prose_count(&text, markdown)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -146,12 +248,97 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(
+            // Sem atalhos fixos: quem manda é o `quick.json`, aplicado no setup.
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, _shortcut, event| {
+                    // Sem o filtro de Pressed o handler dispara 2x por toque
+                    // (press + release) e a janela abriria e fecharia sozinha.
+                    if event.state() == tauri_plugin_global_shortcut::ShortcutState::Pressed {
+                        quick::open_quick(app);
+                    }
+                })
+                .build(),
+        )
         .manage(Db::default())
         .manage(Translator::default())
+        .manage(DocJob::default())
         .setup(|app| {
             let db = app.state::<Db>().inner();
             if let Err(e) = history::open(app.handle(), db) {
                 eprintln!("[localtranslate] falha ao abrir o histórico: {e}");
+            }
+
+            // Bandeja: o atalho global só serve se o app continuar vivo depois
+            // que o usuário fecha a janela.
+            let abrir = MenuItem::with_id(app, "abrir", "Abrir LocalTranslate", true, None::<&str>)?;
+            let rapida = MenuItem::with_id(app, "rapida", "Tradução rápida", true, None::<&str>)?;
+            let sair = MenuItem::with_id(app, "sair", "Sair", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&abrir, &rapida, &sair])?;
+            let _tray = TrayIconBuilder::with_id("main")
+                .icon(app.default_window_icon().unwrap().clone())
+                .tooltip("LocalTranslate")
+                .menu(&menu)
+                .show_menu_on_left_click(false)
+                .on_menu_event(|app, ev| match ev.id.as_ref() {
+                    "abrir" => show_main(app),
+                    "rapida" => quick::open_quick(app),
+                    "sair" => app.exit(0),
+                    _ => {}
+                })
+                .on_tray_icon_event(|tray, ev| {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = ev
+                    {
+                        show_main(tray.app_handle());
+                    }
+                })
+                .build(app)?;
+
+            // Atalho global a partir do que estiver salvo. Falha aqui é comum
+            // (combinação já tomada por outro app) e NÃO pode derrubar o boot —
+            // vira aviso e a UI de configurações mostra o erro ao tentar de novo.
+            if let Ok(data) = app_data(app.handle()) {
+                let cfg = quick::load(&data);
+                if let Err(e) = quick::apply_shortcut(app.handle(), &cfg) {
+                    eprintln!("[localtranslate] atalho global não registrado: {e}");
+                }
+            }
+
+            // Fechar a principal só manda pra bandeja se o usuário pediu — a
+            // janela `quick` fica viva (escondida) e sozinha ela impediria o
+            // app de sair, deixando um processo invisível rodando.
+            if let Some(main) = app.get_webview_window("main") {
+                let h = app.handle().clone();
+                main.clone().on_window_event(move |ev| {
+                    if let WindowEvent::CloseRequested { api, .. } = ev {
+                        let tray = app_data(&h).map(|d| quick::load(&d).keep_in_tray).unwrap_or(false);
+                        if tray {
+                            api.prevent_close();
+                            let _ = main.hide();
+                        } else {
+                            h.exit(0);
+                        }
+                    }
+                });
+            }
+
+            // A janelinha some ao perder o foco (clique fora), como todo popup de
+            // sistema. Mas `Focused(false)` chega também no instante seguinte ao
+            // `show()` em algumas máquinas — se o Rust escondesse direto, a janela
+            // abriria e sumiria no mesmo piscar. Por isso quem decide é o front,
+            // que sabe há quanto tempo abriu.
+            if let Some(q) = app.get_webview_window("quick") {
+                let h = app.handle().clone();
+                q.on_window_event(move |ev| {
+                    if let WindowEvent::Focused(false) = ev {
+                        let _ = h.emit_to("quick", "quick-blur", ());
+                    }
+                });
             }
 
             // Timer de descarregamento: modelos parados há >5min saem da RAM (o
@@ -173,6 +360,14 @@ pub fn run() {
             cancel_download,
             remove_model,
             translate_text,
+            translate_document,
+            cancel_document,
+            document_units,
+            quick::quick_config,
+            quick::quick_config_set,
+            quick::quick_hide,
+            quick::clipboard_read,
+            quick::clipboard_write,
             history::history_add,
             history::history_list,
             history::history_delete,

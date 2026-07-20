@@ -91,6 +91,44 @@ const pt = {
   "models.foot1": "Os modelos ficam em",
   "models.foot2":
     ". Ficam na RAM só enquanto em uso e são descarregados depois de alguns minutos parados.",
+
+  // Arquivo (.txt/.md)
+  "topbar.fileTitle": "Traduzir um arquivo .txt ou .md inteiro",
+  "topbar.file": "Arquivo",
+  "file.title": "Traduzir arquivo",
+  "file.sub":
+    "Traduz um .txt ou .md inteiro e salva numa cópia. Em Markdown a estrutura é preservada: cabeçalhos, listas, links, tabelas, blocos de código e trechos `assim` saem intactos.",
+  "file.pick": "Escolher arquivo",
+  "file.units": "{n} trechos a traduzir",
+  "file.direction": "Direção:",
+  "file.directionNote": "(muda na tela principal)",
+  "file.mdNote":
+    "Markdown detectado — só o texto vai pro modelo. URLs, código e marcadores não são traduzidos.",
+  "file.run": "Traduzir e salvar…",
+  "file.cancel": "Cancelar",
+  "file.canceled": "Tradução cancelada.",
+  "file.progress": "{done} de {total} trechos",
+  "file.etaSec": "faltam ~{n}s",
+  "file.etaMin": "faltam ~{n} min",
+  "file.saved": "Arquivo traduzido e salvo",
+  "file.savedAt": "Salvo em",
+  "file.modelMissing": "O modelo desta direção ainda não foi baixado.",
+
+  // Janela rápida (atalho global)
+  "quick.direction": "Direção da tradução",
+  "quick.hint": "Ctrl+Enter traduz · Esc fecha",
+  "quick.close": "Fechar",
+  "quick.placeholder": "Cole ou digite o texto…",
+  "quick.copyClose": "Copiar e fechar",
+  "quick.modelMissing": "Modelo não baixado — abra o LocalTranslate para instalar.",
+  "settings.quick": "Tradução rápida (atalho global)",
+  "settings.quickHelp":
+    "Com o app aberto (ou na bandeja), o atalho abre uma janelinha já com o texto da área de transferência.",
+  "settings.quickEnabled": "Ligar o atalho global",
+  "settings.quickHideOnBlur": "Fechar a janelinha ao clicar fora",
+  "settings.quickBusy": "O sistema recusou \"{accel}\" — provavelmente já é atalho de outro app.",
+  "settings.quickKeepTray": "Fechar a janela mantém o app na bandeja (atalho segue valendo)",
+  "settings.quickSaved": "Atalho registrado.",
 } as const;
 
 export type MessageKey = keyof typeof pt;
@@ -158,6 +196,42 @@ const en: Record<MessageKey, string> = {
   "models.foot1": "Models are stored in",
   "models.foot2":
     ". They stay in RAM only while in use and are unloaded after a few idle minutes.",
+
+  "topbar.fileTitle": "Translate a whole .txt or .md file",
+  "topbar.file": "File",
+  "file.title": "Translate file",
+  "file.sub":
+    "Translates a whole .txt or .md and saves a copy. In Markdown the structure is preserved: headings, lists, links, tables, code blocks and `inline` snippets come out untouched.",
+  "file.pick": "Choose file",
+  "file.units": "{n} segments to translate",
+  "file.direction": "Direction:",
+  "file.directionNote": "(change it on the main screen)",
+  "file.mdNote":
+    "Markdown detected — only the prose goes to the model. URLs, code and markers are not translated.",
+  "file.run": "Translate and save…",
+  "file.cancel": "Cancel",
+  "file.canceled": "Translation canceled.",
+  "file.progress": "{done} of {total} segments",
+  "file.etaSec": "~{n}s left",
+  "file.etaMin": "~{n} min left",
+  "file.saved": "File translated and saved",
+  "file.savedAt": "Saved to",
+  "file.modelMissing": "The model for this direction hasn't been downloaded yet.",
+
+  "quick.direction": "Translation direction",
+  "quick.hint": "Ctrl+Enter translates · Esc closes",
+  "quick.close": "Close",
+  "quick.placeholder": "Paste or type the text…",
+  "quick.copyClose": "Copy and close",
+  "quick.modelMissing": "Model not downloaded — open LocalTranslate to install it.",
+  "settings.quick": "Quick translate (global shortcut)",
+  "settings.quickHelp":
+    "With the app open (or in the tray), the shortcut opens a small window already filled with the clipboard text.",
+  "settings.quickEnabled": "Enable the global shortcut",
+  "settings.quickHideOnBlur": "Close the small window when clicking outside",
+  "settings.quickBusy": "The system refused \"{accel}\" — another app probably owns it.",
+  "settings.quickKeepTray": "Closing the window keeps the app in the tray (shortcut stays live)",
+  "settings.quickSaved": "Shortcut registered.",
 };
 
 const es: Record<MessageKey, string> = {
@@ -223,6 +297,42 @@ const es: Record<MessageKey, string> = {
   "models.foot1": "Los modelos se guardan en",
   "models.foot2":
     ". Permanecen en la RAM solo mientras se usan y se descargan tras unos minutos inactivos.",
+
+  "topbar.fileTitle": "Traducir un archivo .txt o .md completo",
+  "topbar.file": "Archivo",
+  "file.title": "Traducir archivo",
+  "file.sub":
+    "Traduce un .txt o .md completo y guarda una copia. En Markdown se conserva la estructura: encabezados, listas, enlaces, tablas, bloques de código y fragmentos `así` salen intactos.",
+  "file.pick": "Elegir archivo",
+  "file.units": "{n} fragmentos por traducir",
+  "file.direction": "Dirección:",
+  "file.directionNote": "(se cambia en la pantalla principal)",
+  "file.mdNote":
+    "Markdown detectado — solo el texto va al modelo. Las URL, el código y los marcadores no se traducen.",
+  "file.run": "Traducir y guardar…",
+  "file.cancel": "Cancelar",
+  "file.canceled": "Traducción cancelada.",
+  "file.progress": "{done} de {total} fragmentos",
+  "file.etaSec": "faltan ~{n}s",
+  "file.etaMin": "faltan ~{n} min",
+  "file.saved": "Archivo traducido y guardado",
+  "file.savedAt": "Guardado en",
+  "file.modelMissing": "El modelo de esta dirección aún no se ha descargado.",
+
+  "quick.direction": "Dirección de la traducción",
+  "quick.hint": "Ctrl+Enter traduce · Esc cierra",
+  "quick.close": "Cerrar",
+  "quick.placeholder": "Pega o escribe el texto…",
+  "quick.copyClose": "Copiar y cerrar",
+  "quick.modelMissing": "Modelo no descargado — abre LocalTranslate para instalarlo.",
+  "settings.quick": "Traducción rápida (atajo global)",
+  "settings.quickHelp":
+    "Con la app abierta (o en la bandeja), el atajo abre una ventanita ya con el texto del portapapeles.",
+  "settings.quickEnabled": "Activar el atajo global",
+  "settings.quickHideOnBlur": "Cerrar la ventanita al hacer clic fuera",
+  "settings.quickBusy": "El sistema rechazó \"{accel}\" — probablemente ya es atajo de otra app.",
+  "settings.quickKeepTray": "Cerrar la ventana mantiene la app en la bandeja (el atajo sigue activo)",
+  "settings.quickSaved": "Atajo registrado.",
 };
 
 const DICTS: Record<Locale, Record<MessageKey, string>> = { pt, en, es };

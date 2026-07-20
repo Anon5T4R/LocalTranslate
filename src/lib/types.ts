@@ -29,6 +29,19 @@ export interface DownloadProgress {
   total: number;
 }
 
+export interface DocProgress {
+  done: number;
+  total: number;
+}
+
+export interface QuickConfig {
+  shortcut: string;
+  enabled: boolean;
+  direction: string;
+  hideOnBlur: boolean;
+  keepInTray: boolean;
+}
+
 export interface DownloadDone {
   leg: string;
   ok: boolean;

@@ -7,6 +7,7 @@ export function TopBar() {
   const historyOpen = useUi((s) => s.historyOpen);
   const setModelsOpen = useUi((s) => s.setModelsOpen);
   const setSettingsOpen = useUi((s) => s.setSettingsOpen);
+  const setFileOpen = useUi((s) => s.setFileOpen);
   const models = useStore((s) => s.models);
 
   const anyInstalled = models.some((m) => m.installed);
@@ -24,6 +25,9 @@ export function TopBar() {
           title={t("topbar.historyTitle")}
         >
           🕘 {t("topbar.history")}
+        </button>
+        <button onClick={() => setFileOpen(true)} title={t("topbar.fileTitle")}>
+          📄 {t("topbar.file")}
         </button>
         <button onClick={() => setModelsOpen(true)} title={t("topbar.modelsTitle")}>
           {anyInstalled ? "📦" : "📥"} {t("topbar.models")}

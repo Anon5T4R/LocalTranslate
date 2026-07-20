@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
+import { quickConfig, quickConfigSet } from "../lib/backend";
 import { LOCALE_LABELS, type Locale, setLocale, t, useLocale } from "../lib/i18n";
+import type { QuickConfig } from "../lib/types";
 import { type Theme, useUi } from "../state/ui";
 
 const THEMES: {
@@ -30,6 +33,36 @@ export function SettingsModal() {
   const theme = useUi((s) => s.theme);
   const setTheme = useUi((s) => s.setTheme);
   const locale = useLocale();
+
+  const [quick, setQuick] = useState<QuickConfig | null>(null);
+  const [shortcutErr, setShortcutErr] = useState<string | null>(null);
+  const [savedOk, setSavedOk] = useState(false);
+
+  useEffect(() => {
+    void quickConfig()
+      .then(setQuick)
+      .catch(() => {});
+  }, []);
+
+  // O registro é a única prova: `register()` devolve Err quando a combinação já
+  // é de outro app. Sem mostrar isso, o usuário aperta a tecla, não acontece
+  // nada, e o app parece quebrado.
+  const applyQuick = async (next: QuickConfig) => {
+    setQuick(next);
+    setSavedOk(false);
+    try {
+      await quickConfigSet(next);
+      setShortcutErr(null);
+      setSavedOk(true);
+    } catch (e) {
+      const msg = typeof e === "string" ? e : String((e as Error)?.message ?? e);
+      setShortcutErr(
+        msg.includes("SHORTCUT_BUSY")
+          ? t("settings.quickBusy", { accel: next.shortcut })
+          : msg,
+      );
+    }
+  };
 
   return (
     <div className="overlay" onClick={() => setSettingsOpen(false)}>
@@ -70,6 +103,50 @@ export function SettingsModal() {
             ))}
           </div>
         </div>
+
+        {quick && (
+          <div className="setting">
+            <label>{t("settings.quick")}</label>
+            <p className="modal-sub">{t("settings.quickHelp")}</p>
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={quick.enabled}
+                onChange={(e) => void applyQuick({ ...quick, enabled: e.target.checked })}
+              />
+              {t("settings.quickEnabled")}
+            </label>
+            <div className="row">
+              <input
+                type="text"
+                value={quick.shortcut}
+                spellCheck={false}
+                onChange={(e) => setQuick({ ...quick, shortcut: e.target.value })}
+                onBlur={() => void applyQuick(quick)}
+                placeholder="ctrl+shift+t"
+                disabled={!quick.enabled}
+              />
+            </div>
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={quick.hideOnBlur}
+                onChange={(e) => void applyQuick({ ...quick, hideOnBlur: e.target.checked })}
+              />
+              {t("settings.quickHideOnBlur")}
+            </label>
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={quick.keepInTray}
+                onChange={(e) => void applyQuick({ ...quick, keepInTray: e.target.checked })}
+              />
+              {t("settings.quickKeepTray")}
+            </label>
+            {shortcutErr && <div className="banner err">{shortcutErr}</div>}
+            {savedOk && !shortcutErr && <div className="banner ok">{t("settings.quickSaved")}</div>}
+          </div>
+        )}
 
         <p className="modal-foot">
           <strong>LocalTranslate</strong>{t("settings.about")}

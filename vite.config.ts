@@ -13,6 +13,20 @@ export default defineConfig(async () => ({
     dedupe: ["react", "react-dom"],
   },
 
+  // Duas páginas: o app (`index.html`) e a janelinha do atalho global
+  // (`quick.html`, janela `quick`). Sem declarar as duas entradas, o build só
+  // emitiria a index e a janelinha abriria EM BRANCO no instalador — e
+  // funcionaria o tempo todo em `tauri dev`, que serve o projeto inteiro pelo
+  // Vite. É o tipo de quebra que só aparece depois do release.
+  build: {
+    rollupOptions: {
+      input: {
+        main: "index.html",
+        quick: "quick.html",
+      },
+    },
+  },
+
   // Opções do Vite ajustadas pro Tauri (só em `tauri dev`/`tauri build`).
   clearScreen: false,
   server: {

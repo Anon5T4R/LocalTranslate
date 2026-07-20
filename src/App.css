@@ -297,6 +297,10 @@ button.close {
   background: var(--err-bg);
   border-color: var(--err-border);
 }
+.banner.ok {
+  background: var(--panel-2);
+  border-color: var(--accent);
+}
 
 /* ---------- caixas de tradução ---------- */
 .boxes {
@@ -533,6 +537,28 @@ code {
 /* ---------- settings ---------- */
 .setting {
   margin: 16px 0;
+}
+.setting .check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+  margin: 6px 0;
+}
+.setting .row {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0;
+}
+.setting .row input[type="text"] {
+  flex: 1;
+  font: inherit;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
 }
 .setting label {
   display: block;

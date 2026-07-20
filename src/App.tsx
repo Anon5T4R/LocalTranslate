@@ -4,6 +4,7 @@ import { TranslatePanel } from "./components/TranslatePanel";
 import { HistoryPanel } from "./components/HistoryPanel";
 import { ModelsModal } from "./components/ModelsModal";
 import { SettingsModal } from "./components/SettingsModal";
+import { FileModal } from "./components/FileModal";
 import { Toasts } from "./components/Toasts";
 import {
   inTauri,
@@ -20,6 +21,7 @@ export default function App() {
   const historyOpen = useUi((s) => s.historyOpen);
   const modelsOpen = useUi((s) => s.modelsOpen);
   const settingsOpen = useUi((s) => s.settingsOpen);
+  const fileOpen = useUi((s) => s.fileOpen);
   const pushToast = useUi((s) => s.pushToast);
 
   const loadHistory = useStore((s) => s.loadHistory);
@@ -63,6 +65,7 @@ export default function App() {
       </div>
       {modelsOpen && <ModelsModal />}
       {settingsOpen && <SettingsModal />}
+      {fileOpen && <FileModal />}
       <Toasts />
     </div>
   );

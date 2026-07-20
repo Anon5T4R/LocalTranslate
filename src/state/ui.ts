@@ -28,12 +28,14 @@ interface UiState {
   theme: Theme;
   modelsOpen: boolean;
   settingsOpen: boolean;
+  fileOpen: boolean;
   historyOpen: boolean;
   toasts: Toast[];
 
   setTheme: (t: Theme) => void;
   setModelsOpen: (v: boolean) => void;
   setSettingsOpen: (v: boolean) => void;
+  setFileOpen: (v: boolean) => void;
   toggleHistory: () => void;
   pushToast: (kind: Toast["kind"], text: string) => void;
   dismissToast: (id: number) => void;
@@ -65,6 +67,7 @@ export const useUi = create<UiState>((set) => ({
   theme: loadTheme(),
   modelsOpen: false,
   settingsOpen: false,
+  fileOpen: false,
   historyOpen: false,
   toasts: [],
 
@@ -75,6 +78,7 @@ export const useUi = create<UiState>((set) => ({
   },
   setModelsOpen: (modelsOpen) => set({ modelsOpen }),
   setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
+  setFileOpen: (fileOpen) => set({ fileOpen }),
   toggleHistory: () => set((s) => ({ historyOpen: !s.historyOpen })),
   pushToast: (kind, text) =>
     set((s) => ({ toasts: [...s.toasts, { id: nextToast++, kind, text }] })),
