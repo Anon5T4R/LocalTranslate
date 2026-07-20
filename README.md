@@ -41,11 +41,32 @@ estrutura garantida. O contador de "plano B" aparece na medição do bench.
 
 ### Custo (medido, não estimado)
 
-Marian em CPU não é rápido. Números da máquina de desenvolvimento (pt→en,
-release com LTO) estão em `docs`/no commit da v0.4.0 — a regra prática é que
-**arquivo grande leva minutos a horas**, então a tradução roda fora da thread da
-UI (comando `async` = pool do Tauri), com progresso por trecho, estimativa de
-tempo e botão de cancelar.
+Marian em CPU não é rápido. Medido na máquina de desenvolvimento, pt→en, perfil
+`bench-doc`, documento Markdown real (o `ESTADO.md` da suíte):
+
+| | |
+|---|---|
+| Entrada | **20 823 bytes**, 297 trechos de prosa |
+| Tempo | **228,6 s** |
+| Taxa | **5,3 KB/min** · **1,30 trechos/s** |
+| Plano B (marcador destruído) | **1 trecho em 297 — 0,34 %** |
+
+Ou seja: **~4 min por 20 KB**. Um arquivo de 500 KB extrapola pra **~1h30** —
+extrapolação linear, *não medida* (o bench de 482 KB não foi rodado até o fim).
+
+Duas leituras importam aqui:
+
+1. **O marcador funciona.** 99,7 % dos trechos voltaram do Marian com os `#0#`
+   intactos. O plano B é rede de segurança, não caminho normal — mas continua
+   sendo o que garante a estrutura no 0,34 % restante.
+2. **Isto é lento pra arquivo grande.** Por isso a tradução roda fora da thread
+   da UI (comando `async` = pool do Tauri), com progresso por trecho, estimativa
+   de tempo e botão de cancelar.
+
+Imperfeição conhecida: o modelo às vezes devolve espaço em volta de um marcador
+de ênfase içado, produzindo `** Texto **` em vez de `**Texto**`. A contagem de
+marcadores se preserva (a estrutura não quebra), mas o negrito pode não renderizar
+em Markdown estrito. Normalizar esse espaço é fatia própria.
 
 Limitação assumida: existe **um modelo carregado por perna**, protegido por
 mutex. Enquanto um documento roda, uma tradução avulsa (caixa principal ou
