@@ -22,6 +22,8 @@
   --err-border: #fca5a5;
   --shadow: 0 10px 30px rgba(20, 40, 90, 0.12);
   --radius: 12px;
+  /* <select> no Linux: sem isto o GTK pinta o texto com a cor dele. */
+  color-scheme: light;
 }
 
 /* Escuro: quase-preto (L* 6) sobe ~4.5 L* mantendo matiz. */
@@ -41,6 +43,8 @@
   --err-bg: #2a1414;
   --err-border: #7f1d1d;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  /* <select> no Linux: sem isto o GTK pinta o texto com a cor dele. */
+  color-scheme: dark;
 }
 
 :root[data-theme="nature"] {
@@ -59,6 +63,8 @@
   --err-bg: #f7e6e1;
   --err-border: #c0492f;
   --shadow: 0 10px 30px rgba(60, 70, 60, 0.14);
+  /* <select> no Linux: sem isto o GTK pinta o texto com a cor dele. */
+  color-scheme: light;
 }
 
 :root[data-theme="darkblue"] {
@@ -77,6 +83,8 @@
   --err-bg: #2a1414;
   --err-border: #f87171;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  /* <select> no Linux: sem isto o GTK pinta o texto com a cor dele. */
+  color-scheme: dark;
 }
 
 :root[data-theme="calmgreen"] {
@@ -95,6 +103,8 @@
   --err-bg: #f6e5e0;
   --err-border: #c0492f;
   --shadow: 0 10px 30px rgba(60, 70, 60, 0.14);
+  /* <select> no Linux: sem isto o GTK pinta o texto com a cor dele. */
+  color-scheme: light;
 }
 
 :root[data-theme="pastelpink"] {
@@ -113,6 +123,8 @@
   --err-bg: #f9e2e7;
   --err-border: #d84a6b;
   --shadow: 0 10px 30px rgba(60, 70, 60, 0.14);
+  /* <select> no Linux: sem isto o GTK pinta o texto com a cor dele. */
+  color-scheme: light;
 }
 
 :root[data-theme="punkprincess"] {
@@ -131,6 +143,8 @@
   --err-bg: #2a0f16;
   --err-border: #ff5470;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  /* <select> no Linux: sem isto o GTK pinta o texto com a cor dele. */
+  color-scheme: dark;
 }
 
 * {
