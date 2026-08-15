@@ -22,6 +22,7 @@ pub(crate) fn app_data(app: &AppHandle) -> Result<PathBuf, String> {
 }
 
 /// Traz a janela principal de volta (bandeja, 2º launch).
+
 fn show_main(app: &AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.show();
@@ -232,6 +233,22 @@ fn document_units(text: String, markdown: bool) -> usize {
     md::prose_count(&text, markdown)
 }
 
+/// Contorna a titlebar quebrada do tao <= 0.35 no GNOME/Wayland (CSD propia
+/// com regiao de input morta — causa e fix em tao#1218, so via tauri 2.12):
+/// troca por uma HeaderBar comum com layout forcado min/max/fechar, ANTES do
+/// primeiro map. Sai junto com o upgrade ao tao 0.36 (wry 0.56).
+#[cfg(target_os = "linux")]
+fn instalar_csd_limpa(w: &tauri::WebviewWindow) {
+    use gtk::prelude::*;
+    let Ok(gw) = w.gtk_window() else { return };
+    let header = gtk::HeaderBar::new();
+    header.set_show_close_button(true);
+    header.set_decoration_layout(Some("menu:minimize,maximize,close"));
+    header.set_title(Some("LocalTranslate"));
+    header.show();
+    gw.set_titlebar(Some(&header));
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // ── Contorno da tela branca do webkit: REMOVIDO, e o porquê importa ──────
@@ -285,6 +302,11 @@ pub fn run() {
         .manage(Translator::default())
         .manage(DocJob::default())
         .setup(|app| {
+
+            #[cfg(target_os = "linux")]
+            if let Some(w) = app.get_webview_window("main") {
+                instalar_csd_limpa(&w);
+            }
             let db = app.state::<Db>().inner();
             if let Err(e) = history::open(app.handle(), db) {
                 eprintln!("[localtranslate] falha ao abrir o histórico: {e}");
